@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
-# This script is only for Ubuntu/Debian to install Shadowsocks and v2ray plugin
-# Make sure you are using at lease Debian 8 or Ubuntu 16.10.
+# This script is only for Ubuntu/Debian to install Shadowsocks and v2ray plugin.
+# Make sure you are using at least Debian 8 or Ubuntu 16.10 and kernal version greater than 4.9.
+
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[0;33m'
+plain='\033[0m'
 
 download() {
     local filename=${1}
@@ -9,7 +14,7 @@ download() {
         echo -e "[${green}Info${plain}] ${filename} [found]"
     else
         echo -e "[${green}Info${plain}] ${filename} not found, download now..."
-        wget --no-check-certificate -cq -t3 -T60 -O ${1} ${2}
+        wget --no-check-certificate -c -t3 -T60 -O ${1} ${2}
         if [ $? -eq 0 ]; then
             echo -e "[${green}Info${plain}] ${filename} download completed..."
         else
@@ -110,5 +115,18 @@ EOF
 
 systemctl enable shadowsocks-libev
 systemctl start shadowsocks-libev
+
+# Setting BBR
+param=$(sysctl net.ipv4.tcp_congestion_control | awk '{print $3}')
+if [[ x"${param}" == x"bbr" ]]; then
+    echo -e "${green}Info:${plain} TCP BBR has already been installed. nothing to do..."
+else
+    sed -i '/net.core.default_qdisc/d' /etc/sysctl.conf
+	sed -i '/net.ipv4.tcp_congestion_control/d' /etc/sysctl.conf
+	echo "net.core.default_qdisc = fq" >> /etc/sysctl.conf
+	echo "net.ipv4.tcp_congestion_control = bbr" >> /etc/sysctl.conf
+	sysctl -p >/dev/null 2>&1
+	echo -e "${green}Info:${plain} Setting TCP BBR completed..."
+fi
 
 echo "script finished."
