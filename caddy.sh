@@ -30,13 +30,19 @@ useradd --system \
 if [ ! -d /etc/caddy ]; then
     mkdir -p /etc/caddy
 fi
-touch /etc/caddy/Caddyfile
 
 cat > /etc/caddy/Caddyfile <<- EOF
-    0.0.0.0 {
+    0.0.0.0:2020 {
         respond "Hello, world!"
     }
 EOF
+
+# Create log folder
+chmod 755 /root
+if [ ! -d /root/caddy ]; then
+    mkdir -p /root/caddy
+fi
+chown caddy /root/caddy
 
 cat > /etc/systemd/system/caddy.service <<- EOF
     [Unit]

@@ -94,7 +94,8 @@ while true; do
 done
 download "${plugin_ver}.tar.gz" "${download_link}"
 tar zxf ${plugin_ver}.tar.gz
-cp v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin
+mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin
+rm ${plugin_ver}.tar.gz
 
 if [ ! -d /etc/shadowsocks-libev ]; then
     mkdir -p /etc/shadowsocks-libev
@@ -114,11 +115,11 @@ cat > /etc/shadowsocks-libev/config.json <<- EOF
 }
 EOF
 
-cat >> /etc/caddy/Caddyfile <<- EOF
+cat >> /etc/caddy/Caddyfile << EOF
 0.0.0.0 {
 	encode zstd gzip
 	log {
-		output file /var/log/access.log
+		output file /root/caddy/access.log
 	}
 	reverse_proxy https://bing.com
 	reverse_proxy ${webpath} localhost:${shadowsocksport}
