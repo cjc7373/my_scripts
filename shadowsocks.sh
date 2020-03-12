@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This script is only for Ubuntu/Debian to install Shadowsocks and v2ray plugin
 # Make sure you are using at lease Debian 8 or Ubuntu 16.10.
 
