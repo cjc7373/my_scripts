@@ -44,24 +44,7 @@ echo
 # Set shadowsocks-libev config port
 while true
 do
-dport=$(shuf -i 9000-19999 -n 1)
-echo -e "Please enter a port for shadowsocks-libev [1-65535]"
-read -p "(Default port: ${dport}):" shadowsocksport
-[ -z "$shadowsocksport" ] && shadowsocksport=${dport}
-expr ${shadowsocksport} + 1 &>/dev/null
-if [ $? -eq 0 ]; then
-    if [ ${shadowsocksport} -ge 1 ] && [ ${shadowsocksport} -le 65535 ] && [ ${shadowsocksport:0:1} != 0 ]; then
-        echo
-        echo "---------------------------"
-        echo "port = ${shadowsocksport}"
-        echo "---------------------------"
-        echo
-        break
-    fi
-fi
-echo -e "[${red}Error${plain}] Please enter a correct number [1-65535]"
-done
-
+shadowsocksport=$(shuf -i 9000-19999 -n 1)
 shadowsockscipher="aes-256-gcm"
 
 # Set shadowsocks v2ray plugin web path
@@ -74,6 +57,25 @@ echo "---------------------------"
 echo "web path = ${webpath}"
 echo "---------------------------"
 echo
+
+# create config in advance (to prevent ss not to reload the config)
+if [ ! -d /etc/shadowsocks-libev ]; then
+    mkdir -p /etc/shadowsocks-libev
+fi
+cat > /etc/shadowsocks-libev/config.json <<- EOF
+{
+    "server":"127.0.0.1",
+    "server_port":${shadowsocksport},
+    "password":"${shadowsockspwd}",
+    "timeout":300,
+    "method":"${shadowsockscipher}",
+    "fast_open":true,
+    "nameserver":"1.1.1.1",
+    "mode":"tcp_and_udp",
+    "plugin":"v2ray-plugin",
+	"plugin_opts":"server;path=${webpath}"
+}
+EOF
 
 # install shadowsocks and v2ray-plugin
 # -y的意义不明 大概是自动yes
@@ -97,37 +99,23 @@ tar zxf ${plugin_ver}.tar.gz
 mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin
 rm ${plugin_ver}.tar.gz
 
-if [ ! -d /etc/shadowsocks-libev ]; then
-    mkdir -p /etc/shadowsocks-libev
-fi
-cat > /etc/shadowsocks-libev/config.json <<- EOF
-{
-    "server":"127.0.0.1",
-    "server_port":${shadowsocksport},
-    "password":"${shadowsockspwd}",
-    "timeout":300,
-    "method":"${shadowsockscipher}",
-    "fast_open":true,
-    "nameserver":"1.1.1.1",
-    "mode":"tcp_and_udp",
-    "plugin":"v2ray-plugin",
-	"plugin_opts":"server;path=${webpath}"
-}
-EOF
-
+# 自行修改地址，修改后证书可能不生效，需再重启一次caddy
 cat >> /etc/caddy/Caddyfile << EOF
 0.0.0.0 {
 	encode zstd gzip
 	log {
 		output file /root/caddy/access.log
 	}
-	reverse_proxy https://bing.com
+	reverse_proxy / https://bing.com {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+	}
 	reverse_proxy ${webpath} localhost:${shadowsocksport}
 }
 EOF
 
 systemctl enable shadowsocks-libev
 systemctl start shadowsocks-libev
+systemctl reload caddy
 
 # Setting BBR
 param=$(sysctl net.ipv4.tcp_congestion_control | awk '{print $3}')
