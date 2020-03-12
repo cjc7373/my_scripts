@@ -1,6 +1,5 @@
 #!/bin/bash
 # This script is only for Ubuntu/Debian to install Shadowsocks and v2ray plugin
-# Make sure you are using root. 
 # Make sure you are using at lease Debian 8 or Ubuntu 16.10.
 
 download() {
@@ -20,8 +19,10 @@ download() {
     fi
 }
 
-# request root permission
-sudo echo
+if [ `whoami` != "root" ];then
+	echo "This script must be run as root."
+	exit 1
+fi
 
 echo -e "[${green}Info${plain}] Latest version: ${green}${shadowsocks_libev_ver}${plain}"
 
