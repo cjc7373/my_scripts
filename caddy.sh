@@ -31,10 +31,10 @@ if [ ! -d /etc/caddy ]; then
     mkdir -p /etc/caddy
 fi
 
-cat > /etc/caddy/Caddyfile <<- EOF
-    0.0.0.0:2020 {
-        respond "Hello, world!"
-    }
+cat > /etc/caddy/Caddyfile << EOF
+0.0.0.0:2020 {
+    respond "Hello, world!"
+}
 EOF
 
 # Create log folder
