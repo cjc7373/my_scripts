@@ -30,12 +30,11 @@ download() {
 # request root permission
 sudo echo
 
-get_latest_version
 echo -e "[${green}Info${plain}] Latest version: ${green}${shadowsocks_libev_ver}${plain}"
 
 # Set shadowsocks-libev config password
 echo "Please input password for shadowsocks-libev:"
-read shadowsockspwd
+read shadowosckspwd
 [ -z "${shadowosckspwd}" ] && echo "Please input password" && exit 1
 echo
 echo "---------------------------"
