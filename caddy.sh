@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[0;33m'
+plain='\033[0m'
+
 if [ `whoami` != "root" ];then
     echo "This script must be run as root."
     exit 1
@@ -28,9 +33,9 @@ fi
 touch /etc/caddy/Caddyfile
 
 cat > /etc/caddy/Caddyfile <<- EOF
-0.0.0.0 {
-    respond "Hello, world!"
-}
+    0.0.0.0 {
+        respond "Hello, world!"
+    }
 EOF
 
 cat > /etc/systemd/system/caddy.service <<- EOF

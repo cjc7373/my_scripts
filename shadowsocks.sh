@@ -66,6 +66,7 @@ shadowsockscipher="aes-256-gcm"
 
 # Set shadowsocks v2ray plugin web path
 echo "Please input web path for shadowsocks v2ray-plugin:"
+echo "Note: use the form of /api/"
 read webpath
 [ -z "${webpath}" ] && echo "Please input path" && exit 1
 echo
@@ -98,7 +99,7 @@ cp v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin
 if [ ! -d /etc/shadowsocks-libev ]; then
     mkdir -p /etc/shadowsocks-libev
 fi
-cat > /etc/shadowsocks-libev/config.json<<-EOF
+cat > /etc/shadowsocks-libev/config.json <<- EOF
 {
     "server":"127.0.0.1",
     "server_port":${shadowsocksport},
@@ -110,6 +111,17 @@ cat > /etc/shadowsocks-libev/config.json<<-EOF
     "mode":"tcp_and_udp",
     "plugin":"v2ray-plugin",
 	"plugin_opts":"server;path=${webpath}"
+}
+EOF
+
+cat >> /etc/caddy/Caddyfile <<- EOF
+0.0.0.0 {
+	encode zstd gzip
+	log {
+		output file /var/log/access.log
+	}
+	reverse_proxy https://bing.com
+	reverse_proxy ${webpath} localhost:${shadowsocksport}
 }
 EOF
 
