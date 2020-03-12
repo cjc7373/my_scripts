@@ -1,14 +1,7 @@
 #!/bin/bash
 # This script is only for Ubuntu/Debian to install Shadowsocks and v2ray plugin
-
-check_kernel_version(){
-    local kernel_version=$(uname -r | cut -d- -f1)
-    if version_gt ${kernel_version} 3.7.0; then
-        return 0
-    else
-        return 1
-    fi
-}
+# Make sure you are using root. 
+# Make sure you are using at lease Debian 8 or Ubuntu 16.10.
 
 download() {
     local filename=${1}
@@ -34,8 +27,8 @@ echo -e "[${green}Info${plain}] Latest version: ${green}${shadowsocks_libev_ver}
 
 # Set shadowsocks-libev config password
 echo "Please input password for shadowsocks-libev:"
-read shadowosckspwd
-[ -z "${shadowosckspwd}" ] && echo "Please input password" && exit 1
+read shadowsockspwd
+[ -z "${shadowsockspwd}" ] && echo "Please input password" && exit 1
 echo
 echo "---------------------------"
 echo "password = ${shadowsockspwd}"
@@ -76,7 +69,7 @@ echo "---------------------------"
 echo
 
 # install shadowsocks and v2ray-plugin
-# -y的意义不明
+# -y的意义不明 大概是自动yes
 apt -y update
 apt -y install shadowsocks-libev
 
@@ -96,13 +89,6 @@ download "${plugin_ver}.tar.gz" "${download_link}"
 tar zxf ${plugin_ver}.tar.gz
 cp v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin
 
-
-if check_kernel_version && check_kernel_headers; then
-    fast_open="true"
-else
-    fast_open="false"
-fi
-
 if [ ! -d /etc/shadowsocks-libev ]; then
     mkdir -p /etc/shadowsocks-libev
 fi
@@ -113,7 +99,7 @@ cat > /etc/shadowsocks-libev/config.json<<-EOF
     "password":"${shadowsockspwd}",
     "timeout":300,
     "method":"${shadowsockscipher}",
-    "fast_open":${fast_open},
+    "fast_open":true,
     "nameserver":"1.1.1.1",
     "mode":"tcp_and_udp",
     "plugin":"v2ray-plugin",
@@ -123,3 +109,5 @@ EOF
 
 systemctl enable shadowsocks-libev
 systemctl start shadowsocks-libev
+
+echo "script finished."
