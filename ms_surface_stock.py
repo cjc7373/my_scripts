@@ -46,8 +46,14 @@ class Laptop:
             stock_status_display = self.stock_status
 
         if flg == 1:
-            data = {'time': str(datetime.now()), 'price_suggest': price_suggest_display, 'price_new': price_new_display, 'stock_status': stock_status_display}
-            fields = ['time', 'price_suggest', 'price_new', 'stock_status']
+            data = {
+                'time': str(datetime.now()), 
+                'price_suggest': price_suggest_display, 
+                'price_new': price_new_display, 
+                'stock_status': stock_status_display,
+                'display_name': self.display_name
+                }
+            fields = ['time', 'display_name', 'price_suggest', 'price_new', 'stock_status']
             csv_path = os.path.join(BASE_DIR, 'price_data.csv')
             try:
                 filesize = os.path.getsize(csv_path)
