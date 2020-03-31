@@ -80,7 +80,9 @@ def init_data():
     url_base = "https://www.microsoftstore.com.cn/refurbishedsurface"
     product = {
         'certified-refurbished-surface-book': ('mic2173', 'mic2185'), 
-        'certified-refurbished-surface-book-2': ('mic2564', 'mic2563')
+        'certified-refurbished-surface-book-2': ('mic2564', 'mic2563'),
+        'certified-refurbished-surface-pro-6': ('mic2602', 'mic2697'),
+        'certified-refurbished-surface-pro': ('mic2405', 'mic2407', 'mic2410')
         }
     laptop_list = []
     for product_name in product:
