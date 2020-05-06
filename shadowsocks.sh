@@ -42,8 +42,6 @@ echo "---------------------------"
 echo
 
 # Set shadowsocks-libev config port
-while true
-do
 shadowsocksport=$(shuf -i 9000-19999 -n 1)
 shadowsockscipher="aes-256-gcm"
 
