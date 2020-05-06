@@ -29,7 +29,7 @@ if [ `whoami` != "root" ];then
 	exit 1
 fi
 
-echo -e "[${green}Info${plain}] Latest version: ${green}${shadowsocks_libev_ver}${plain}"
+echo -e "[${green}Info${plain}] Script starting..."
 
 # Set shadowsocks-libev config password
 echo "Please input password for shadowsocks-libev:"
