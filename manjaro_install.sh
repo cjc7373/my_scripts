@@ -6,18 +6,19 @@ $USER=cjc
 chmod 600 /home/$USER/.ssh/id_rsa
 
 # setting up ssh configs
-ln ssh/config /home/$USER/.ssh/config
+ln secrets/ssh/config /home/$USER/.ssh/config
 
 # setting up pacman mirrors
 # TODO
 
 # setting up archlinuxcn
 # TODO
-pacman -Syu
+pacman -Sy
 pacman -S archlinuxcn-keyring
 
-# setting up pacman verbose pkg list
+# setting up pacman config file
 sed "s/#VerbosePkgLists/VerbosePkgLists"
+sed "s/#Color/Color"
 
 # setting up scale (150%)
 # simply modify font size
@@ -26,10 +27,12 @@ gsettings set org.gnome.desktop.interface text-scaling-factor 1.5
 # install packages
 pacman -Syu --noconfirm
 pacman -S --noconfirm pycharm-professional vim code npm github-desktop-bin yarn \ # about coding
+    gdb
     clash chromium telegram-desktop goldendict-qt5-git typora nixnote2 \ # GUI applications
-    electron-netease-cloud-music \
+    electron-netease-cloud-music qbittorrent obs-studio mpv \
     openbsd-netcat bash-completion onedrive-abraunegg \ # CLI applications or libaraies
-    proxychains-ng tldr pkgtools
+    proxychains-ng tldr pkgtools trash-cli bind-tools hping besttrace \
+    cloc
 
 # install AUR packages
 # base-devel may be needed in compiling AUR packages
@@ -93,3 +96,8 @@ cat < my_bash.profile >> ~/.bashrc
 # setting up onedrive systemd service
 systemctl --user enable onedrive
 systemctl --user start onedrive
+
+# link mpv config file
+# TODO
+
+# TODO git config file
