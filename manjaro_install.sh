@@ -29,10 +29,11 @@ pacman -Syu --noconfirm
 pacman -S --noconfirm pycharm-professional vim code npm github-desktop-bin yarn \ # about coding
     gdb
     clash chromium telegram-desktop goldendict-qt5-git typora nixnote2 \ # GUI applications
-    electron-netease-cloud-music qbittorrent obs-studio mpv \
+    electron-netease-cloud-music qbittorrent obs-studio mpv wireshark-qt \
+    teamviewer \
     openbsd-netcat bash-completion onedrive-abraunegg \ # CLI applications or libaraies
     proxychains-ng tldr pkgtools trash-cli bind-tools hping besttrace \
-    cloc
+    cloc playerctl tumx docker docker-compose tree
 
 # install AUR packages
 # base-devel may be needed in compiling AUR packages
@@ -64,7 +65,8 @@ fi
 # Note: default config file is ~/.config/clash/config.yaml
 
 # setting up Chinese IME
-pacman -S --noconfirm fcitx-im fcitx-rime
+pacman -S --noconfirm fcitx-im fcitx-rime rime-pinyin-zhwiki \
+    fcitx-skin-material rime-double-pinyin
 if [ ! -e /home/$HOME/.pam_environment ]; then # TODO may have permission problems
     cat > /home/$HOME/.pam_environment <<- EOF
     GTK_IM_MODULE=fcitx

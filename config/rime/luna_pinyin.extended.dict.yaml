@@ -1,0 +1,9 @@
+---
+    name: luna_pinyin.extended
+    version: 'v0.1-20200524'
+    sort: by_weight
+    use_preset_vocabulary: true
+    import_tables:
+      - 'luna_pinyin'
+      - 'zhwiki_pinyin'
+...
