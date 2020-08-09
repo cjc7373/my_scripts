@@ -31,6 +31,15 @@ fi
 
 echo -e "[${green}Info${plain}] Script starting..."
 
+# add custom repo and install caddy
+echo "deb [trusted=yes] https://apt.fury.io/caddy/ /" \
+    | sudo tee -a /etc/apt/sources.list.d/caddy-fury.list
+apt -y update
+apt install -y caddy
+
+systemctl enable caddy
+systemctl start caddy
+
 # Set shadowsocks-libev config password
 echo "Please input password for shadowsocks-libev:"
 read shadowsockspwd
@@ -53,6 +62,16 @@ read webpath
 echo
 echo "---------------------------"
 echo "web path = ${webpath}"
+echo "---------------------------"
+echo
+
+# Set domain
+echo "Please input your domain for caddy:"
+read domain
+[ -z "${domain}" ] && echo "Please input domain" && exit 1
+echo
+echo "---------------------------"
+echo "domain = ${domain}"
 echo "---------------------------"
 echo
 
@@ -98,12 +117,9 @@ mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin
 rm ${plugin_ver}.tar.gz
 
 # 自行修改地址，修改后证书可能不生效，需再重启一次caddy
-cat >> /etc/caddy/Caddyfile << EOF
-0.0.0.0 {
+cat > /etc/caddy/Caddyfile << EOF
+${domain} {
 	encode zstd gzip
-	log {
-		output file /root/caddy/access.log
-	}
 	reverse_proxy / https://bing.com {
 		header_up Host {http.reverse_proxy.upstream.hostport}
 	}
