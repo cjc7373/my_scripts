@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # This script is only for Ubuntu/Debian to install Shadowsocks and v2ray plugin.
-# Make sure you are using at least Debian 8 or Ubuntu 16.10 and kernal version greater than 4.9.
+# Due to the requirement of BBR support, the minimum kernal version is 4.9.
+# Due to the requirements of some essential libraries in the default repo, 
+# the minimum OS version is Ubuntu 18.04, older versions are not tested.
 
 red='\033[0;31m'
 green='\033[0;32m'
@@ -14,13 +16,43 @@ download() {
         echo -e "[${green}Info${plain}] ${filename} [found]"
     else
         echo -e "[${green}Info${plain}] ${filename} not found, download now..."
-        wget --no-check-certificate -c -t3 -T60 -O ${1} ${2}
+        wget --no-check-certificate -c -t3 -T60 -O ${filename} ${2}
         if [ $? -eq 0 ]; then
             echo -e "[${green}Info${plain}] ${filename} download completed..."
         else
             echo -e "[${red}Error${plain}] Failed to download ${filename}, please download it to ${cur_dir} directory manually and try again."
             exit 1
         fi
+    fi
+}
+
+download_latest_release_from_github() {
+    local repo=${1}  # like "shadowsocks/v2ray-plugin"
+    ver=""
+    while true; do
+        ver=$(wget --no-check-certificate -qO- https://api.github.com/repos/shadowsocks/v2ray-plugin/releases/latest | grep 'tag_name' | cut -d\" -f4)
+        if [ -z ${ver} ]; then
+            echo "Error: Get v2ray-plugin latest version failed, retrying..."
+            continue
+        fi
+        plugin_ver="v2ray-plugin-linux-amd64-${ver}"
+        download_link="https://github.com/shadowsocks/v2ray-plugin/releases/download/${ver}/${plugin_ver}.tar.gz"
+        break
+    done
+    download "${plugin_ver}.tar.gz" "${download_link}"
+    tar zxf ${plugin_ver}.tar.gz
+    mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin
+    rm ${plugin_ver}.tar.gz
+}
+
+install_shadowsocks_from_source() {
+    # libmbedtls and libsodium are included in the repo
+    apt install -y --no-install-recommends gettext build-essential autoconf libtool libpcre3-dev \
+        asciidoc xmlto libev-dev libc-ares-dev automake libmbedtls-dev libsodium-dev
+    # TODO: download and extract
+    ./configure && make && make install
+    if [ $? -eq 0 ]; then
+        echo -e "[${green}Info${plain}] Install shadowsocks success..."
     fi
 }
 
@@ -95,7 +127,7 @@ cat > /etc/shadowsocks-libev/config.json <<- EOF
 EOF
 
 # install shadowsocks and v2ray-plugin
-# -y的意义不明 大概是自动yes
+# -y Automatic yes to prompts
 apt -y update
 apt -y install shadowsocks-libev
 
@@ -107,7 +139,7 @@ while true; do
     	echo "Error: Get v2ray-plugin latest version failed, retrying..."
     	continue
    	fi
-    plugin_ver="v2ray-plugin-linux-amd64-$(echo ${ver})"
+    plugin_ver="v2ray-plugin-linux-amd64-${ver}"
     download_link="https://github.com/shadowsocks/v2ray-plugin/releases/download/${ver}/${plugin_ver}.tar.gz"
     break
 done
