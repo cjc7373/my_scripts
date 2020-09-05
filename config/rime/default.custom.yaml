@@ -10,5 +10,7 @@ patch:
     #     code:
     #         ascii_mode: true
     # translator/enable_correction: true
-    ascii_composer/switch_key/Shift_L: commit_code
-    ascii_composer/switch_key/Shift_R: commit_code
+    ascii_composer/switch_key:
+        Shift_L: commit_code 
+        Shift_R: noop
+    switches/@0/reset: 1
