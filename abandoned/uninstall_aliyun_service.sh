@@ -1,3 +1,5 @@
+# Abandoned due to I would install archlinux when obtaining a VPS
+
 echo "Starting... MAKE SURE TO RUN UNDER ROOT"
 
 mkdir Uninstall-aliyun-service
