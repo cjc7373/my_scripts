@@ -6,9 +6,10 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 Each file SHALL have one of the following status:
 - abandoned: not maintained, and is not useful, but still have values for reference
 - active: maintained, or is used somewhere
+
 Files SHALL be put to the folders named by these status respectively.
 
 ## Notes for Python scripts
 Scripts SHOULD only use standard libraries, as they may be invoked without certain third-party libs.
 
-If a script is using a 3rd lib, it should declare it in `requirements.txt`.
+If a script is using a 3rd lib, it MUST declare it in `requirements.txt`.
