@@ -1,2 +1,5 @@
 requests
 beautifulsoup4
+dbus-python
+pyecharts
+rich
