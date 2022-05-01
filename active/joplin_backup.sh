@@ -1,4 +1,6 @@
 #!/bin/bash
+# This script is run as a systemd user service at `~/.config/systemd/user/joplin-export.timer`
+
 BACKUP_DIR="$HOME/onedrive/Notes"
 BIN="joplin --log-level debug"
 

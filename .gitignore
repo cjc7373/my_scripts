@@ -3,3 +3,4 @@ secrets
 .vscode
 .idea
 **/test.html
+*.data
