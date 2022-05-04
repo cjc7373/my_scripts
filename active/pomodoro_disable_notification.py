@@ -10,7 +10,7 @@ import pickle
 import threading
 import signal
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from pathlib import Path
 from rich import print  # override built-in print
 from rich.progress import track
@@ -82,19 +82,50 @@ def run_pomodoto():
     while True:
         arg_0 = inhbit()
         render_progress("Start working..", timedelta(minutes=25))
+        new_data.append(datetime.now())
         uninhibit(arg_0)
         # print(end="\a") will not work with rich..
         # So I choose to send a notifiction instead.
         notify("Time to take a break!")
         render_progress("Start resting..", timedelta(minutes=5))
         notify("Time to work again!")
-        new_data.append(datetime.now())
         input("Press Enter to confirm next cycle...")
         print()
 
 
+def read_data() -> list[datetime]:
+    """
+    data 保证是有序的, 记录的是每次番茄钟的完成时间.
+    """
+    try:
+        with open(WORKING_DIR / "pomodoro.data", "rb") as f:
+            data = pickle.load(f)
+    except FileNotFoundError:
+        data = []
+    return data
+
+
 def stat():
-    ...
+    data = read_data()
+    day_count = 0
+    prev_date = date.today()
+    for dt in data:
+        if prev_date != dt.date():
+            if day_count != 0:
+                print(f"Total: {day_count} pomodoro(s)")
+                print()
+            day_count = 0
+            prev_date = dt.date()
+            print(dt.date())
+        day_count += 1
+        t = dt.time()
+        prev_t = (dt - timedelta(minutes=25)).time()
+        print(
+            f"{prev_t.isoformat(timespec='minutes')} - {t.isoformat(timespec='minutes')}"
+        )
+    if day_count != 0:
+        print(f"Total: {day_count} pomodoro(s)")
+        print()
 
 
 def handle_sigint(signum, frame):
@@ -109,13 +140,10 @@ def handle_sigint(signum, frame):
             th.join()
     # FIXME: 解决进度条在文字之下
     sys.stdout.buffer.flush()
-    try:
-        with open(WORKING_DIR / "pomodoro.data", "rb") as f:
-            data = pickle.load(f)
-    except FileNotFoundError:
-        data = []
+    data = read_data()
     with open(WORKING_DIR / "pomodoro.data", "wb") as f:
         pickle.dump(data + new_data, f)
+    print()
     print(f"{len(new_data)} record(s) added.")
     sys.exit(0)
 
