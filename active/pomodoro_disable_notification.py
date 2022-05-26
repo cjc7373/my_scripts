@@ -108,8 +108,11 @@ def read_data() -> list[datetime]:
 def stat():
     data = read_data()
     day_count = 0
+    today = date.today()
     prev_date = date.today()
     for dt in data:
+        if today - dt.date() >= timedelta(days=7):
+            continue
         if prev_date != dt.date():
             if day_count != 0:
                 print(f"Total: {day_count} pomodoro(s)")
