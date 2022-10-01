@@ -17,7 +17,7 @@ from rich.progress import track
 from rich.console import Console
 
 console = Console()
-new_data = []
+new_data: list[datetime] = []
 WORKING_DIR = Path(__file__).resolve().parent
 
 notify_interface = dbus.Interface(
@@ -129,6 +129,18 @@ def stat():
     if day_count != 0:
         print(f"Total: {day_count} pomodoro(s)")
         print()
+    else:
+        print("No record in the last 7 days.")
+
+
+def save_data():
+    # FIXME: 解决进度条在文字之下
+    sys.stdout.buffer.flush()
+    data = read_data()
+    with open(WORKING_DIR / "pomodoro.data", "wb") as f:
+        pickle.dump(data + new_data, f)
+    print()
+    print(f"{len(new_data)} record(s) added.")
 
 
 def handle_sigint(signum, frame):
@@ -141,13 +153,7 @@ def handle_sigint(signum, frame):
             # to make the threads drawing the progress bar exit
             th.done.set()
             th.join()
-    # FIXME: 解决进度条在文字之下
-    sys.stdout.buffer.flush()
-    data = read_data()
-    with open(WORKING_DIR / "pomodoro.data", "wb") as f:
-        pickle.dump(data + new_data, f)
-    print()
-    print(f"{len(new_data)} record(s) added.")
+    # save_data()
     sys.exit(0)
 
 
@@ -164,6 +170,10 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     if args.action == "run":
-        run_pomodoto()
+        try:
+            run_pomodoto()
+        finally:
+            # FIXME: why if received sigint, finally is still executed?
+            save_data()
     else:
         stat()
