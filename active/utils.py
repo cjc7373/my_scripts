@@ -1,7 +1,7 @@
-import requests
 import logging
-from typing import Optional, Union, Any
+from typing import Any, Optional, Union
 
+import requests
 
 logger = logging.getLogger(__name__)
 
