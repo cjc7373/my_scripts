@@ -2,19 +2,20 @@
 统计 Github 上自己所有 commits 的时间分布.
 WARNING: search API 最大返回 1000 条结果
 """
-import requests
 import shutil
 from datetime import datetime
+
+from utils import fetch_github_api
 
 
 def fetch_data(user: str) -> list[str]:
     page = 1
     res: list[str] = []
     while True:
-        url = f"https://api.github.com/search/commits?q=author:{user}&per_page=100&page={page}"
+        path = f"search/commits?q=author:{user}&per_page=100&page={page}"
         print(f"Reading page {page}")
-        r = requests.get(url)
-        items = r.json()["items"]
+        r = fetch_github_api("get", path)
+        items = r["items"]
 
         page += 1
         if not items:

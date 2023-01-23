@@ -4,3 +4,4 @@ secrets
 .idea
 **/test.html
 *.data
+__pycache__
