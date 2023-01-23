@@ -1,5 +1,6 @@
 """
 统计 Github 上自己所有 commits 的时间分布.
+WARNING: search API 最大返回 1000 条结果
 """
 import requests
 import shutil

@@ -7,12 +7,12 @@ import signal
 import sys
 
 
-def handle_sigterm(signum, frame):
+def handle_sigint(signum, frame):
     print(f"Exiting process {current_process()}")
     sys.exit(0)
 
 
-signal.signal(signal.SIGINT, handle_sigterm)
+signal.signal(signal.SIGINT, handle_sigint)
 
 
 def dumb_task():
