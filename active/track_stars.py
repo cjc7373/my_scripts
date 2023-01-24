@@ -1,12 +1,14 @@
 import difflib
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
 
-from utils import fetch_github_api
+from utils import fetch_github_api, set_github_token
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+set_github_token(os.getenv("GITHUB_TOKEN"))
 
 USERNAME = "cjc7373"
 
