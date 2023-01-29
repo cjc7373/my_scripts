@@ -5,3 +5,7 @@ pyecharts
 rich
 psutil
 matplotlib
+
+# for dev
+mypy
+black

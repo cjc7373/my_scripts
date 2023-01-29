@@ -1,6 +1,7 @@
 import difflib
 import logging
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -8,7 +9,11 @@ from utils import fetch_github_api, set_github_token
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-set_github_token(os.getenv("GITHUB_TOKEN"))
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+if not GITHUB_TOKEN:
+    logger.error("Env Variable GITHUB_TOKEN not set, exiting..")
+    sys.exit(1)
+set_github_token(GITHUB_TOKEN)
 
 USERNAME = "cjc7373"
 
