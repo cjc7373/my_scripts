@@ -2,19 +2,20 @@
 """
 A simple pomodoro timer, which utilizes org.freedesktop.Notifications dbus interface.
 """
-import dbus
-import time
-import subprocess
 import argparse
 import pickle
-import threading
 import signal
+import subprocess
 import sys
-from datetime import datetime, timedelta, date
+import threading
+import time
+from datetime import date, datetime, timedelta
 from pathlib import Path
+
+import dbus
 from rich import print  # override built-in print
-from rich.progress import track
 from rich.console import Console
+from rich.progress import Progress, track
 
 console = Console()
 new_data: list[datetime] = []
@@ -72,8 +73,12 @@ def render_progress(text: str, duration: timedelta):
     secs = int(duration.total_seconds())
     now = datetime.now()
     print(f"{now.isoformat(' ', timespec='minutes')}: {text}")
-    for _ in track(range(secs), description=text):
-        time.sleep(1)
+    with Progress(auto_refresh=False) as progress:
+        task = progress.add_task(text, total=secs)
+
+        while not progress.finished:
+            progress.update(task, advance=1, refresh=True)
+            time.sleep(1)
     end = datetime.now()
     print(f"{end - now} elapsed\n")
 
@@ -143,27 +148,11 @@ def save_data():
     print(f"{len(new_data)} record(s) added.")
 
 
-def handle_sigint(signum, frame):
-    for th in threading.enumerate():
-        # import traceback
-        # print(th)
-        # traceback.print_stack(sys._current_frames()[th.ident])
-        if th != threading.main_thread():
-            # A hack to the rich library
-            # to make the threads drawing the progress bar exit
-            th.done.set()
-            th.join()
-    # save_data()
-    sys.exit(0)
-
-
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, handle_sigint)
-
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument(
         "action",
-        choices=["run", "stat"],
+        choices=["run", "stat", "debug"],
         nargs="?",
         default="run",
         help="run: run the pomodoro\nstat: show statistics\n (default: %(default)s)",
@@ -172,8 +161,13 @@ if __name__ == "__main__":
     if args.action == "run":
         try:
             run_pomodoto()
+        except KeyboardInterrupt:
+            # do not print stack trace
+            pass
         finally:
-            # FIXME: why if received sigint, finally is still executed?
             save_data()
-    else:
+    elif args.action == "stat":
         stat()
+    else:
+        # notify("Time to take a break!")
+        print("You typed dubug!")
