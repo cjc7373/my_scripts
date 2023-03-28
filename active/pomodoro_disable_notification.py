@@ -4,10 +4,7 @@ A simple pomodoro timer, which utilizes org.freedesktop.Notifications dbus inter
 """
 import argparse
 import pickle
-import signal
 import subprocess
-import sys
-import threading
 import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -139,8 +136,6 @@ def stat():
 
 
 def save_data():
-    # FIXME: 解决进度条在文字之下
-    sys.stdout.buffer.flush()
     data = read_data()
     with open(WORKING_DIR / "pomodoro.data", "wb") as f:
         pickle.dump(data + new_data, f)
@@ -169,5 +164,5 @@ if __name__ == "__main__":
     elif args.action == "stat":
         stat()
     else:
-        # notify("Time to take a break!")
         print("You typed dubug!")
+        notify("Time to take a break!")
