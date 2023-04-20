@@ -49,8 +49,11 @@ for line in diffs:
     elif line.startswith("- "):
         deleted.append(line)
     else:
-        # if we encounter `?` we need to manually handle it
-        raise ValueError(line)
+        # Lines beginning with ‘?’ attempt to guide the eye to intraline differences,
+        # and were not present in either input sequence.
+        # https://docs.python.org/3/library/difflib.html?highlight=difflib#difflib.Differ
+        # So we can safely ignore these lines
+        continue
 
 if added or deleted:
     # we don't need to update if nothing changes
