@@ -9,8 +9,9 @@ BIN="joplin --log-level debug"
 echo -e '\n\nBegin export'
 
 cd $BACKUP_DIR
-find . -type f -name "*.md" -delete
-rm -f _resources/*
+echo "deleting the following folders"
+ls
+ls | xargs rm -r
 
 # TODO: check syncthing status
 $BIN sync
