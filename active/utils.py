@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Any, Optional, Union
 
 import requests
@@ -18,11 +19,16 @@ class BearerAuth(requests.auth.AuthBase):
 __session = requests.Session()
 
 
-def set_github_token(token: str) -> None:
+def set_github_token(token: Optional[str] = None) -> None:
     """
+    get token from parameter or env variable GITHUB_TOKEN
     If token not set, fetching Github API may have usage limits
     """
-    __session.auth = BearerAuth(token=token)
+    if not token:
+        token = os.environ.get("GITHUB_TOKEN")
+    print(f"Github token is: {token}")
+    if token:
+        __session.auth = BearerAuth(token=token)
 
 
 def fetch_github_api(
@@ -34,7 +40,7 @@ def fetch_github_api(
     res = __session.request(method, f"https://api.github.com/{path}", json=data)
     if not res.ok:
         logger.error(f"Previous request not succeeded.")
-        logger.error(f"Request url: {res.request.url}\nbody: {res.request.body}")
+        logger.error(f"Request url: {res.request.url}\nbody: {res.request.body!r}")
         logger.error(f"Response body: {res.content.decode()}")
     res.raise_for_status()
     return res.json()

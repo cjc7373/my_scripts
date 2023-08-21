@@ -1,6 +1,6 @@
+import random
 import re
 import sys
-import random
 
 dice_re = re.compile(r"^\d+d\d+(\+\d+d\d+)*$")
 
@@ -14,10 +14,10 @@ if not dice_re.match(sys.argv[1]):
 
 # a dice would be [1, 20] as 1d20
 dices = [[int(num) for num in dice.split("d")] for dice in sys.argv[1].split("+")]
-res = 0
+res = []
 for dice in dices:
     for _ in range(dice[0]):
-        t = random.randint(1, dice[1])
-        res += t
+        res.append(random.randint(1, dice[1]))
 
-print(res)
+res_str = map(lambda i: str(i), res)
+print(f"{sum(res)} ({','.join(res_str)})")
