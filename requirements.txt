@@ -5,6 +5,7 @@ pyecharts
 rich
 psutil
 matplotlib
+numpy
 
 # for dev
 mypy

@@ -10,6 +10,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import dbus
+import numpy as np
 from rich import print  # override built-in print
 from rich.console import Console
 from rich.progress import Progress, track
@@ -107,32 +108,42 @@ def read_data() -> list[datetime]:
     return data
 
 
-def stat():
+def stat(args):
     data = read_data()
     day_count = 0
+    day_counts = []
     today = date.today()
-    prev_date = date.today()
-    for dt in data:
-        if today - dt.date() >= timedelta(days=7):
-            continue
-        if prev_date != dt.date():
-            if day_count != 0:
-                print(f"Total: {day_count} pomodoro(s)")
-                print()
-            day_count = 0
-            prev_date = dt.date()
-            print(dt.date())
+    for index, dt in enumerate(data):
+        output = True
+        if not args.all and today - dt.date() >= timedelta(days=7):
+            output = False
+
         day_count += 1
-        t = dt.time()
-        prev_t = (dt - timedelta(minutes=25)).time()
-        print(
-            f"{prev_t.isoformat(timespec='minutes')} - {t.isoformat(timespec='minutes')}"
-        )
+        if output:
+            if day_count == 1:
+                print(dt.date())
+            t = dt.time()
+            prev_t = (dt - timedelta(minutes=25)).time()
+            print(
+                f"{prev_t.isoformat(timespec='minutes')} - {t.isoformat(timespec='minutes')}"
+            )
+        if index + 1 < len(data) and dt.date() != data[index + 1].date():
+            if day_count != 0:
+                day_counts.append(day_count)
+                if output:
+                    print(f"Total: {day_count} pomodoro(s)")
+                    print()
+            day_count = 0
     if day_count != 0:
+        day_counts.append(day_count)
         print(f"Total: {day_count} pomodoro(s)")
         print()
     else:
         print("No record in the last 7 days.")
+
+    print(f"Mean pomodoros: {np.mean(day_counts):.2f}")
+    print(f"Median pomodoros: {np.median(day_counts):.0f}")
+    print(f"Max pomodoros: {np.max(day_counts)}")
 
 
 def save_data():
@@ -143,26 +154,40 @@ def save_data():
     print(f"{len(new_data)} record(s) added.")
 
 
+def run(args):
+    try:
+        run_pomodoto()
+    except KeyboardInterrupt:
+        # do not print stack trace
+        pass
+    finally:
+        save_data()
+
+
+def debug(args):
+    print("You typed dubug!")
+    notify("Time to take a break!")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument(
-        "action",
-        choices=["run", "stat", "debug"],
-        nargs="?",
-        default="run",
-        help="run: run the pomodoro\nstat: show statistics\n (default: %(default)s)",
+    subparsers = parser.add_subparsers()
+    parser_run = subparsers.add_parser(name="run", help="run pomodoro")
+    parser_run.set_defaults(func=run)
+
+    parser_stat = subparsers.add_parser(
+        name="stat", help="show the last 7 days records"
     )
+    parser_stat.add_argument(
+        "-a", "--all", action="store_true", help="show all records"
+    )
+    parser_stat.set_defaults(func=stat)
+
+    parser_debug = subparsers.add_parser(name="debug")
+    parser_debug.set_defaults(func=debug)
+
     args = parser.parse_args()
-    if args.action == "run":
-        try:
-            run_pomodoto()
-        except KeyboardInterrupt:
-            # do not print stack trace
-            pass
-        finally:
-            save_data()
-    elif args.action == "stat":
-        stat()
+    if "func" in args:
+        args.func(args)
     else:
-        print("You typed dubug!")
-        notify("Time to take a break!")
+        run(args)
