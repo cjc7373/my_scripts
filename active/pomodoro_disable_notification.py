@@ -54,7 +54,7 @@ def notify(message: str) -> None:
         -1,  # expire_timeout, -1 means default
     )
     subprocess.run(
-        args="mpv /usr/share/sounds/Oxygen-Sys-App-Error-Critical.ogg --script-opts=autoload-disabled=yes",
+        args="mpv /usr/share/sounds/Oxygen-Sys-App-Error-Critical.ogg --script-opts=autoload-disabled=yes --volume=120",
         shell=True,
         capture_output=True,
     )
@@ -68,7 +68,7 @@ def render_progress(text: str, duration: timedelta):
     Without it, the CPU usage is nearly 0%.
     We should see if we could improve this.
     """
-    secs = int(duration.total_seconds())
+    secs = duration.total_seconds()
     now = datetime.now()
     print(f"{now.isoformat(' ', timespec='minutes')}: {text}")
     with Progress(auto_refresh=False) as progress:
@@ -165,7 +165,7 @@ def run(args):
 
 
 def debug(args):
-    print("You typed dubug!")
+    print("You typed debug!")
     notify("Time to take a break!")
 
 

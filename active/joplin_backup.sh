@@ -11,7 +11,10 @@ echo -e '\n\nBegin export'
 cd $BACKUP_DIR
 echo "deleting the following folders"
 ls
-ls | xargs rm -r
+dirs=$(ls)
+if [[ -n $dirs ]] then
+    ls | xargs rm -r
+fi
 
 # TODO: check syncthing status
 $BIN sync

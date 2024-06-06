@@ -5,7 +5,12 @@ import sys
 dice_re = re.compile(r"^\d+d\d+(\+\d+d\d+)*$")
 
 if len(sys.argv) == 1:
-    print(f"usage: python {sys.argv[0]} <dice>")
+    print(
+        f"""usage: python {sys.argv[0]} <dice>
+
+<dice> example: 1d6, 2d4+1d5
+"""
+    )
     sys.exit(0)
 
 if not dice_re.match(sys.argv[1]):
