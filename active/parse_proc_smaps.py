@@ -46,9 +46,6 @@ def main():
 
     mapinfo = defaultdict(lambda: [0] * len(mem_idx))
     total = [0] * len(mem_idx)
-    file = [0] * len(mem_idx)
-    file_cache = [0] * len(mem_idx)
-    lib = [0] * len(mem_idx)
     filesinfo = defaultdict(lambda: [0] * len(mem_idx))
 
     with open(smaps_file, "r") as smap:

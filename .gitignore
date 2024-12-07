@@ -6,3 +6,5 @@ secrets
 *.data
 __pycache__
 venv
+
+a.out
