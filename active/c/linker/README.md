@@ -1,0 +1,5 @@
+- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/cc1 sum.c -o sum.s
+- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/cc1 main.c -o main.s
+- as main.s -o main.o
+- as sum.s -o sum.o
+- ld -o a.out main.o sum.o /usr/lib/Scrt1.o /usr/lib/crti.o /usr/lib/crtn.o  -lc -lgcc -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1  -L/lib/ --dynamic-linker /lib64/ld-linux-x86-64.so.2

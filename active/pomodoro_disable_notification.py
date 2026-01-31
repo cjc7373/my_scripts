@@ -4,7 +4,6 @@ A simple pomodoro timer, which utilizes org.freedesktop.Notifications dbus inter
 """
 import argparse
 import pickle
-import subprocess
 import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -39,10 +38,6 @@ def uninhibit(arg_0: int) -> None:
 
 
 def notify(message: str) -> None:
-    # FIXME: hints like `"sound-file": "/usr/share/sounds/Oxygen-Sys-App-Error.ogg"`
-    # is not working. Don't know why.
-    # So I have to use mpv..
-    # Anyway, sound is not so much important.
     notify_interface.Notify(
         "Pomodoro",  # app_name
         0,  # replaces_id, The optional notification ID that this notification replaces
@@ -50,13 +45,8 @@ def notify(message: str) -> None:
         message,  # summary
         "",  # body
         [],  # actions
-        {},  # hints
+        {"sound-file": "/usr/share/sounds/Oxygen-Sys-App-Error-Critical.ogg"},  # hints
         -1,  # expire_timeout, -1 means default
-    )
-    subprocess.run(
-        args="mpv /usr/share/sounds/Oxygen-Sys-App-Error-Critical.ogg --script-opts=autoload-disabled=yes --volume=120",
-        shell=True,
-        capture_output=True,
     )
 
 
